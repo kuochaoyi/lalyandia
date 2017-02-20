@@ -18,16 +18,15 @@ func (state *AuthHandle) Receive(context actor.Context) {
 
 		fmt.Println(acceptData.Buf.String())
 
-		acceptData.Connection.Write([]byte{0x01, 0x02})
+		acceptData.Connection.Write([]byte("Hello, world!\n"))
 	}
 }
 
 func main() {
 	srv := server.NewServer()
 	props := actor.FromInstance(&AuthHandle{})
-	pid := actor.Spawn(props)
 
-	err := srv.Run(pid, ":9998")
+	err := srv.Run(props, ":9998")
 	if err != nil {
 		fmt.Println(err)
 	}

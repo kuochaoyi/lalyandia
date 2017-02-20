@@ -16,7 +16,7 @@ func NewServer() *Server {
 	return &Server{}
 }
 
-func (s *Server) Run(pid *actor.PID, service string) error {
+func (s *Server) Run(props *actor.Props, service string) error {
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
 	if err != nil {
 		return err
@@ -32,23 +32,38 @@ func (s *Server) Run(pid *actor.PID, service string) error {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
+			fmt.Println("[Accept] err was -", err)
 			continue
 		}
 
-		go func() {
-			defer conn.Close()
+		conn.SetWriteBuffer(2)
 
-			data := bytes.NewBuffer([]byte{})
+		fmt.Println("Accepted -", conn.RemoteAddr())
+
+		go func() {
+			var (
+				pid  = actor.Spawn(props)
+				data = bytes.NewBuffer([]byte{})
+			)
+
+			defer func() {
+				pid.Stop()
+				conn.Close()
+			}()
 
 			for {
-				readLen, err := conn.Read(data.Bytes())
+				buf := make([]byte, 1024)
+				readLen, err := conn.Read(buf)
 				if err != nil {
+					fmt.Println("[Read] err was -", err)
 					break
 				}
 
 				if readLen == 0 {
 					continue
 				}
+
+				data.Write(buf)
 
 				fmt.Println("Len: ", readLen)
 
@@ -57,7 +72,7 @@ func (s *Server) Run(pid *actor.PID, service string) error {
 					Buf:        *data,
 				})
 
-				data.Truncate(readLen)
+				data.Reset()
 			}
 		}()
 	}

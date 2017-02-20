@@ -1,4 +1,4 @@
-.PHONY: build auth game
+.PHONY: build auth game watch
 
 AUTH_NAME = auth_server
 GAME_NAME = game_server
@@ -12,3 +12,6 @@ auth:
 
 game:
 	go run ./game/main.go
+
+watch_auth:
+	reflex -r '\.(go|json|toml)$$' -R '^vendor/' -s -- sh -c 'go build -o ${AUTH_NAME} ./auth/main.go && ./${AUTH_NAME}'

@@ -25,9 +25,8 @@ func (state *GameHandle) Receive(context actor.Context) {
 func main() {
 	srv := server.NewServer()
 	props := actor.FromInstance(&GameHandle{})
-	pid := actor.Spawn(props)
 
-	err := srv.Run(pid, ":9999")
+	err := srv.Run(props, ":9999")
 	if err != nil {
 		fmt.Println(err)
 	}
