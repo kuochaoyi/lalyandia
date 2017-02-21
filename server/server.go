@@ -36,8 +36,6 @@ func (s *Server) Run(props *actor.Props, service string) error {
 			continue
 		}
 
-		conn.SetWriteBuffer(2)
-
 		fmt.Println("Accepted -", conn.RemoteAddr())
 
 		go func() {
