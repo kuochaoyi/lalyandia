@@ -8,12 +8,15 @@ type ItemData struct {
 	WeaponType  WeaponType
 	EtcItemType EtcItemType
 
-	Blessed      bool
-	Enchanted    bool
-	Tradable     bool
-	Dropable     bool
-	Destructable bool
-	CanPenetrate bool
+	Blessed          bool
+	EnchantEnabled   bool
+	Enchanted        bool
+	Tradable         bool
+	Dropable         bool
+	Destructable     bool
+	CanPenetrate     bool
+	PrivateStore     bool
+	CanEquipByPlayer bool
 
 	DefaultAction   ItemAction
 	DefaultPrice    int
@@ -22,6 +25,7 @@ type ItemData struct {
 	CrystalType     CrystalType
 	CrystalCount    int
 	SoulshotCount   int
+	SpiritshotCount int
 	ConsumeType     ConsumeType
 	InitialCount    int
 	MaximumCount    int
@@ -54,11 +58,16 @@ type ItemData struct {
 	MpBonus    int
 	ReuseDelay int
 
-	Skill               string
-	CriticalAttackSkill string
+	Skills []string
+
+	//TODO
+	UseCondition   string
+	EquipCondition string
 
 	//TODO
 	//dual_fhit_rate
 	//category
 	//html
+	//base_attribute_attack
+	//base_attribute_defend
 }

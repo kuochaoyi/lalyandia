@@ -28,61 +28,15 @@ type MoveSpeedType struct {
 }
 
 type DamageRange struct {
-	X int
-	Y int
-	Width int
+	X      int
+	Y      int
+	Width  int
 	Height int
 }
 
 type CollisionBox struct {
 	Width  int
 	Height int
-}
-
-type Range int
-
-const (
-	OneToTenLevelRange Range = iota
-	ElevenToTwentyLevelRange
-	TwentyOneToThirtyLevelRange
-	ThirtyOneToFortyLevelRange
-	FortyOneToFiftyLevelRange
-	FiftyOneToSixtyLevelRange
-	SixtyOneToSeventyLevelRange
-
-	UnknownLevelRange
-)
-
-type ValueWithCondition [7]float32
-
-func (v *ValueWithCondition) GetRange(level int) Range {
-	result := UnknownLevelRange
-	switch level {
-	case level > 0 && level <= 10:
-		result = OneToTenLevelRange
-	case level > 10 && level <= 20:
-		result = ElevenToTwentyLevelRange
-	case level > 20 && level <= 30:
-		result = TwentyOneToThirtyLevelRange
-	case level > 30 && level <= 40:
-		result = ThirtyOneToFortyLevelRange
-	case level > 40 && level <= 50:
-		result = FortyOneToFiftyLevelRange
-	case level > 50 && level <= 60:
-		result = FiftyOneToSixtyLevelRange
-	case level > 60 && level <= 70:
-		result = SixtyOneToSeventyLevelRange
-	}
-
-	return result
-}
-
-func (v *ValueWithCondition) CheckAndGet(levelRange Range) (float32, error) {
-	if int(levelRange) > len(*v) {
-		return 0, errors.New("")
-	}
-
-	return v[levelRange], nil
 }
 
 type PlayerRace int
@@ -150,3 +104,15 @@ type Territory struct {
 	NpcMakers []NpcMaker
 }
 
+/****************************************/
+
+type SkillId int
+type SkillOperate int
+type SkillTargetType int
+type SkillAffectScope int
+type SkillNextAction int
+
+type SkillAffectLimit struct {
+	Min int
+	Max int
+}

@@ -15,21 +15,23 @@ type PlayerParameters struct {
 
 	WeightLevelBonus [PlayerMaxLevel]int
 
-	StrBonus   [99]int
-	IntBonus   [99]int
-	ConBonus   [99]int
-	MenBonus   [99]int
-	DexBonus   [99]int
-	WitBonus   [99]int
+	StrBonus [99]int
+	IntBonus [99]int
+	ConBonus [99]int
+	MenBonus [99]int
+	DexBonus [99]int
+	WitBonus [99]int
 
-	OrgHpRegen ValueWithCondition
-	OrgMpRegen ValueWithCondition
+	OrgHpRegen [99]float32
+	OrgMpRegen [99]float32
+	OrgCpRegen [99]float32
 
-	MoveSpeed MoveSpeedType
+	MoveSpeed          MoveSpeedType
 	MoveModeSpeedBonus float32
 
 	HpTable [PlayerMaxLevel]float32
 	MpTable [PlayerMaxLevel]float32
+	CpTable [PlayerMaxLevel]float32
 
 	HitConditionBonus float32
 

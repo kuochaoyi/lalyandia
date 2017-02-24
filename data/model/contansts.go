@@ -1,6 +1,6 @@
 package model
 
-const PlayerMaxLevel = 70
+const PlayerMaxLevel = 80
 
 const (
 	Human PlayerRace = iota
@@ -216,4 +216,22 @@ const (
 	MaleSex
 	FemaleSex
 	EtcSex
+)
+
+/****************************************/
+
+const (
+	OperateA1 SkillOperate = iota
+)
+
+const (
+	Enemy SkillTargetType = iota
+)
+
+const (
+	Single SkillAffectScope = iota
+)
+
+const (
+	Attack SkillNextAction = iota
 )
