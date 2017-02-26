@@ -2,6 +2,9 @@ syntax = "proto3";
 package external;
 import "github.com/AsynkronIT/protoactor-go/actor/protos.proto";
 
-message NewServer {
+message CheckAccount {
   actor.PID Sender = 1;
+  string SessionToken1 = 2;
+  string SessionToken2 = 3;
+  string Login = 4;
 }

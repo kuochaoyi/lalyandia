@@ -25,3 +25,5 @@ _testmain.go
 
 auth_server
 game_server
+resource/auth_config.toml
+resource/game_config.toml
