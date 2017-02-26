@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"github.com/AsynkronIT/protoactor-go/actor"
-	"github.com/Nyarum/lalyandia/messages"
+	"github.com/Nyarum/lalyandia/messages/local"
 )
 
 type Server struct {
@@ -65,7 +65,7 @@ func (s *Server) Run(props *actor.Props, service string) error {
 
 				fmt.Println("Len: ", readLen)
 
-				pid.Tell(messages.AcceptData{
+				pid.Tell(local.AcceptData{
 					Connection: conn,
 					Buf:        *data,
 				})
