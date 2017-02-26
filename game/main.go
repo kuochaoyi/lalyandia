@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/AsynkronIT/protoactor-go/actor"
-	"github.com/Nyarum/lalyandia/messages"
+	"github.com/Nyarum/lalyandia/messages/local"
 	"github.com/Nyarum/lalyandia/server"
 
 	"fmt"
@@ -13,8 +13,8 @@ type GameHandle struct {
 
 func (state *GameHandle) Receive(context actor.Context) {
 	switch context.Message().(type) {
-	case messages.AcceptData:
-		acceptData := context.Message().(messages.AcceptData)
+	case local.AcceptData:
+		acceptData := context.Message().(local.AcceptData)
 
 		fmt.Println(acceptData.Buf.String())
 
