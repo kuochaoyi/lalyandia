@@ -2,7 +2,10 @@ package server
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
+	"io"
+	"log"
 	"net"
 
 	"github.com/AsynkronIT/protoactor-go/actor"
@@ -41,7 +44,7 @@ func (s *Server) Run(props *actor.Props, service string) error {
 		go func() {
 			var (
 				pid  = actor.Spawn(props)
-				data = bytes.NewBuffer([]byte{})
+				data = bytes.NewBuffer(make([]byte, 0, 10384))
 			)
 
 			defer func() {
@@ -50,10 +53,14 @@ func (s *Server) Run(props *actor.Props, service string) error {
 			}()
 
 			for {
-				buf := make([]byte, 1024)
+				buf := make([]byte, 10384)
 				readLen, err := conn.Read(buf)
 				if err != nil {
-					fmt.Println("[Read] err was -", err)
+					if err == io.EOF {
+						fmt.Println(err)
+					} else if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
+						fmt.Println(err)
+					}
 					break
 				}
 
@@ -61,16 +68,31 @@ func (s *Server) Run(props *actor.Props, service string) error {
 					continue
 				}
 
-				data.Write(buf)
+				data.Write(buf[:readLen])
 
-				fmt.Println("Len: ", readLen)
+				if data.Len() < 2 {
+					continue
+				}
 
+				lenPacket := binary.BigEndian.Uint16(data.Bytes()[0:2])
+
+				if data.Len() < int(lenPacket) {
+					continue
+				}
+
+				opcode := data.Bytes()[2]
+
+				data.Truncate(3)
+
+				log.Printf("Len of packet - %d and Opcode - %d\n", lenPacket, opcode)
+
+				// Need to refactor to send only read-to-send packets
 				pid.Tell(local.AcceptData{
 					Connection: conn,
 					Buf:        *data,
 				})
 
-				data.Reset()
+				data.Truncate(int(lenPacket))
 			}
 		}()
 	}
