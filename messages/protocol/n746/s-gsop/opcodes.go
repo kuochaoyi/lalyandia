@@ -1,4 +1,4 @@
-package op
+package gsop
 
 const (
 	VersionCheck uint16 = iota

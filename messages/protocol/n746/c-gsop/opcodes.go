@@ -1,4 +1,4 @@
-package op
+package gsop
 
 const (
 	SendProtocolVersion uint16 = iota
