@@ -1,7 +1,7 @@
 package gsop
 
 const (
-	VersionCheck uint16 = iota
+	VersionCheck int16 = iota
 	MoveToLocation
 	NpcSay
 	CharInfo
