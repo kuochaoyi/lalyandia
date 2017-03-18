@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/AsynkronIT/protoactor-go/badge.svg?branch=dev)](https://coveralls.io/github/AsynkronIT/protoactor-go?branch=dev)
 [![Sourcegraph](https://sourcegraph.com/github.com/AsynkronIT/protoactor-go/-/badge.svg)](https://sourcegraph.com/github.com/AsynkronIT/protoactor-go?badge)
 
-[![Join the chat at https://gitter.im/AsynkronIT/gam](https://badges.gitter.im/AsynkronIT/gam.svg)](https://gitter.im/AsynkronIT/gam?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/AsynkronIT/protoactor](https://badges.gitter.im/AsynkronIT/protoactor.svg)](https://gitter.im/AsynkronIT/protoactor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Cross platform actors
 
@@ -188,15 +188,15 @@ func (state *HelloActor) Receive(context actor.Context) {
 
 func main() {
     props := actor.FromInstance(&HelloActor{})
-    actor := actor.Spawn(props)
-    actor.Tell(Hello{Who: "Roger"})
+    pid := actor.Spawn(props)
+    actor.Tell(pid, Hello{Who: "Roger"})
 
     //why wait?
     //Stop is a system message and is not processed through the user message mailbox
     //thus, it will be handled _before_ any user message
     //we only do this to show the correct order of events in the console
     time.Sleep(1 * time.Second)
-    actor.Stop()
+    actor.StopActor(pid)
 
     console.ReadLine()
 }

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/Nyarum/barrel"
-	lsop "github.com/Nyarum/lalyandia/messages/protocol/n746/server-lsop"
+	lsop "github.com/Nyarum/lalyandia/messages/protocol/n746/client-lsop"
 )
 
 // ServerInit struct for 0xC621 revision
@@ -17,8 +17,8 @@ type ServerInit struct {
 	NullTermination byte
 }
 
-func NewServerInit() *ServerInit {
-	return &ServerInit{
+func NewServerInit() ServerInit {
+	return ServerInit{
 		Unknown: [16]byte{0x29, 0xDD, 0x95, 0x4E,
 			0x77, 0xC3, 0x9C, 0xFC,
 			0x97, 0xAD, 0xB6, 0x20,
@@ -27,11 +27,11 @@ func NewServerInit() *ServerInit {
 	}
 }
 
-func (si *ServerInit) Opcode() int16 {
-	return lsop.Init
+func (si ServerInit) Opcode() int16 {
+	return lsop.RequestGGAuth
 }
 
-func (si *ServerInit) Marshal(st interface{}) ([]byte, error) {
+func (si ServerInit) Marshal(st interface{}) ([]byte, error) {
 	siNew, ok := st.(*ServerInit)
 	if !ok {
 		return nil, errors.New("I don't know that struct")
@@ -48,5 +48,9 @@ func (si *ServerInit) Marshal(st interface{}) ([]byte, error) {
 		WriteBytes(siNew.BlowFishKey[:]).
 		WriteByte(siNew.NullTermination)
 
-	return nil, nil
+	if bar.Error() != nil {
+		return nil, bar.Error()
+	}
+
+	return bar.Bytes(), nil
 }

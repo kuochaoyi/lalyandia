@@ -13,35 +13,35 @@ type IServerProtocol interface {
 }
 
 type Protocol struct {
-	Client map[int16]IClientProtocol
-	Server map[int16]IServerProtocol
+	client map[int16]IClientProtocol
+	server map[int16]IServerProtocol
 }
 
 func NewProtocol() *Protocol {
 	protocol := (&Protocol{
-		Client: make(map[int16]IClientProtocol),
-		Server: make(map[int16]IServerProtocol),
+		client: make(map[int16]IClientProtocol),
+		server: make(map[int16]IServerProtocol),
 	}).registerServer(n746.NewServerInit())
 
-	return &Protocol{}
+	return protocol
 }
 
 func (p *Protocol) registerClient(packet IClientProtocol) *Protocol {
-	p.Client[packet.Opcode()] = packet
+	p.client[packet.Opcode()] = packet
 
 	return p
 }
 
 func (p *Protocol) registerServer(packet IServerProtocol) *Protocol {
-	p.Server[packet.Opcode()] = packet
+	p.server[packet.Opcode()] = packet
 
 	return p
 }
 
 func (p *Protocol) Decode(opcode int16, data []byte) (interface{}, error) {
-	return p.Client[opcode].Unmarshal(data)
+	return p.client[opcode].Unmarshal(data)
 }
 
 func (p *Protocol) Encode(opcode int16, st interface{}) ([]byte, error) {
-	return p.Server[opcode].Marshal(st)
+	return p.server[opcode].Marshal(st)
 }

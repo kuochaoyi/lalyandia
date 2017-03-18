@@ -10,6 +10,7 @@ import (
 
 	"github.com/AsynkronIT/protoactor-go/actor"
 	"github.com/Nyarum/lalyandia/messages/local"
+	"github.com/Nyarum/lalyandia/messages/protocol"
 )
 
 type Server struct {
@@ -30,7 +31,7 @@ func (s *Server) Run(props *actor.Props, service string) error {
 		return err
 	}
 
-	fmt.Println(tcpAddr.String())
+	fmt.Println("Server is starting... - ", tcpAddr.String())
 
 	for {
 		conn, err := listener.Accept()
@@ -43,14 +44,19 @@ func (s *Server) Run(props *actor.Props, service string) error {
 
 		go func() {
 			var (
-				pid  = actor.Spawn(props)
-				data = bytes.NewBuffer(make([]byte, 0, 10384))
+				pid            = actor.Spawn(props)
+				data           = bytes.NewBuffer(make([]byte, 0, 10384))
+				customProtocol = protocol.NewProtocol()
 			)
 
 			defer func() {
 				pid.Stop()
 				conn.Close()
 			}()
+
+			pid.Tell(local.InitData{
+				Connection: conn,
+			})
 
 			for {
 				buf := make([]byte, 10384)
@@ -74,7 +80,7 @@ func (s *Server) Run(props *actor.Props, service string) error {
 					continue
 				}
 
-				lenPacket := binary.BigEndian.Uint16(data.Bytes()[0:2])
+				lenPacket := binary.LittleEndian.Uint16(data.Bytes()[0:2])
 
 				if data.Len() < int(lenPacket) {
 					continue
@@ -86,11 +92,13 @@ func (s *Server) Run(props *actor.Props, service string) error {
 
 				log.Printf("Len of packet - %d and Opcode - %d\n", lenPacket, opcode)
 
-				// Need to refactor to send only read-to-send packets
-				pid.Tell(local.AcceptData{
-					Connection: conn,
-					Buf:        *data,
-				})
+				st, err := customProtocol.Decode(int16(opcode), data.Bytes())
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+
+				pid.Tell(st)
 
 				data.Truncate(int(lenPacket))
 			}

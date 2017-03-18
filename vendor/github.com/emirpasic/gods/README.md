@@ -24,6 +24,7 @@ Implementation of various data structures and algorithms in Go.
     - [TreeBidiMap](#treebidimap)
   - [Trees](#trees)
     - [RedBlackTree](#redblacktree)
+    - [AVLTree](#avltree)
     - [BTree](#btree)
     - [BinaryHeap](#binaryheap)
 - [Functions](#functions)
@@ -36,6 +37,9 @@ Implementation of various data structures and algorithms in Go.
     - [Enumerable](#enumerable)
       - [EnumerableWithIndex](#enumerablewithindex)
       - [EnumerableWithKey](#enumerablewithkey)
+    - [Serialization](#serialization)
+      - [JSONSerializer](#jsonserializer)
+      - [JSONDeserializer](#jsondeserializer)
     - [Sort](#sort)
     - [Container](#container)
 - [Appendix](#appendix)
@@ -70,6 +74,7 @@ Containers are either ordered or unordered. All ordered containers provide [stat
 | [HashBidiMap](#hashbidimap) | no | no | no | key* |
 | [TreeBidiMap](#treebidimap) | yes | yes* | yes | key* |
 | [RedBlackTree](#redblacktree) | yes | yes* | no | key |
+| [AVLTree](#avltree) | yes | yes* | no | key |
 | [BTree](#btree) | yes | yes* | no | key |
 | [BinaryHeap](#binaryheap) | yes | yes* | no | index |
 |  |  | <sub><sup>*reversible</sup></sub> |  | <sub><sup>*bidirectional</sup></sub> |
@@ -102,7 +107,7 @@ type List interface {
 
 A [list](#lists) backed by a dynamic array that grows and shrinks implicitly.
 
-Implements [List](#lists), [IteratorWithIndex](#iteratorwithindex) and [EnumerableWithIndex](#enumerablewithindex) interfaces.
+Implements [List](#lists), [IteratorWithIndex](#iteratorwithindex), [EnumerableWithIndex](#enumerablewithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -139,7 +144,7 @@ func main() {
 
 A [list](#lists) where each element points to the next element in the list.
 
-Implements [List](#lists), [IteratorWithIndex](#iteratorwithindex) and [EnumerableWithIndex](#enumerablewithindex) interfaces.
+Implements [List](#lists), [IteratorWithIndex](#iteratorwithindex), [EnumerableWithIndex](#enumerablewithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -176,7 +181,7 @@ func main() {
 
 A [list](#lists) where each element points to the next and previous elements in the list.
 
-Implements [List](#lists), [IteratorWithIndex](#iteratorwithindex) and [EnumerableWithIndex](#enumerablewithindex) interfaces.
+Implements [List](#lists), [IteratorWithIndex](#iteratorwithindex), [EnumerableWithIndex](#enumerablewithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -233,7 +238,7 @@ type Set interface {
 
 A [set](#sets) backed by a hash table (actually a Go's map). It makes no guarantees as to the iteration order of the set.
 
-Implements [Set](#sets) interface.
+Implements [Set](#sets), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -260,7 +265,7 @@ func main() {
 
 A [set](#sets) backed by a [red-black tree](#redblacktree) to keep the elements ordered with respect to the [comparator](#comparator).
 
-Implements [Set](#sets), [IteratorWithIndex](#iteratorwithindex) and [EnumerableWithIndex](#enumerablewithindex) interfaces.
+Implements [Set](#sets), [IteratorWithIndex](#iteratorwithindex), [EnumerableWithIndex](#enumerablewithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -307,7 +312,7 @@ type Stack interface {
 
 A [stack](#stacks) based on a [linked list](#singlylinkedlist).
 
-Implements [Stack](#stacks) and [IteratorWithIndex](#iteratorwithindex) interfaces.
+Implements [Stack](#stacks), [IteratorWithIndex](#iteratorwithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -334,7 +339,7 @@ func main() {
 
 A [stack](#stacks) based on a [array list](#arraylist).
 
-Implements [Stack](#stacks) and [IteratorWithIndex](#iteratorwithindex) interfaces.
+Implements [Stack](#stacks), [IteratorWithIndex](#iteratorwithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -392,7 +397,7 @@ type BidiMap interface {
 
 A [map](#maps) based on hash tables. Keys are unordered.
 
-Implements [Map](#maps) interface.
+Implements [Map](#maps), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -419,7 +424,7 @@ func main() {
 
 A [map](#maps) based on [red-black tree](#redblacktree). Keys are ordered  ordered with respect to the [comparator](#comparator).
 
-Implements [Map](#maps), [IteratorWithKey](#iteratorwithkey) and [EnumerableWithKey](#enumerablewithkey) interfaces.
+Implements [Map](#maps), [IteratorWithKey](#iteratorwithkey), [EnumerableWithKey](#enumerablewithkey), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -450,7 +455,7 @@ func main() {
 
 A [map](#maps) based on two hashmaps. Keys are unordered.
 
-Implements [BidiMap](#maps) interface.
+Implements [BidiMap](#maps), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -479,7 +484,7 @@ func main() {
 
 A [map](#maps) based on red-black tree. This map guarantees that the map will be in both ascending key and value order.  Other than key and value ordering, the goal with this structure is to avoid duplication of elements (unlike in [HashBidiMap](#hashbidimap)), which can be significant if contained elements are large.
 
-Implements [BidiMap](#maps), [IteratorWithKey](#iteratorwithkey) and [EnumerableWithKey](#enumerablewithkey) interfaces.
+Implements [BidiMap](#maps), [IteratorWithKey](#iteratorwithkey), [EnumerableWithKey](#enumerablewithkey), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 ```go
 package main
@@ -529,7 +534,7 @@ A red–black [tree](#trees) is a binary search tree with an extra bit of data p
 
 The balancing of the tree is not perfect but it is good enough to allow it to guarantee searching in O(log n) time, where n is the total number of elements in the tree. The insertion and deletion operations, along with the tree rearrangement and recoloring, are also performed in O(log n) time. <sub><sup>[Wikipedia](http://en.wikipedia.org/wiki/Red%E2%80%93black_tree)</sup></sub>
 
-Implements [Tree](#trees) and [ReverseIteratorWithKey](#reverseiteratorwithkey) interfaces.
+Implements [Tree](#trees), [ReverseIteratorWithKey](#reverseiteratorwithkey), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 <p align="center"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Red-black_tree_example.svg/500px-Red-black_tree_example.svg.png" width="400px" height="200px" /></p>
 
@@ -589,6 +594,65 @@ func main() {
 
 Extending the red-black tree's functionality  has been demonstrated in the following [example](https://github.com/emirpasic/gods/blob/master/examples/redblacktreeextended.go).
 
+#### AVLTree
+
+AVL [tree](#trees) is a self-balancing binary search tree. In an AVL tree, the heights of the two child subtrees of any node differ by at most one; if at any time they differ by more than one, rebalancing is done to restore this property. Lookup, insertion, and deletion all take O(log n) time in both the average and worst cases, where n is the number of nodes in the tree prior to the operation. Insertions and deletions may require the tree to be rebalanced by one or more tree rotations.
+
+AVL trees are often compared with red–black trees because both support the same set of operations and take O(log n) time for the basic operations. For lookup-intensive applications, AVL trees are faster than red–black trees because they are more strictly balanced. <sub><sup>[Wikipedia](https://en.wikipedia.org/wiki/AVL_tree)</sup></sub>
+
+Implements [Tree](#trees), [ReverseIteratorWithKey](#reverseiteratorwithkey), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
+
+<p align="center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/AVL-tree-wBalance_K.svg/262px-AVL-tree-wBalance_K.svg.png" width="300px" height="180px" /><br/><sub>AVL tree with balance factors (green)</sub></p>
+
+```go
+package main
+
+import (
+	"fmt"
+	avl "github.com/emirpasic/gods/trees/avltree"
+)
+
+func main() {
+	tree := avl.NewWithIntComparator() // empty(keys are of type int)
+
+	tree.Put(1, "x") // 1->x
+	tree.Put(2, "b") // 1->x, 2->b (in order)
+	tree.Put(1, "a") // 1->a, 2->b (in order, replacement)
+	tree.Put(3, "c") // 1->a, 2->b, 3->c (in order)
+	tree.Put(4, "d") // 1->a, 2->b, 3->c, 4->d (in order)
+	tree.Put(5, "e") // 1->a, 2->b, 3->c, 4->d, 5->e (in order)
+	tree.Put(6, "f") // 1->a, 2->b, 3->c, 4->d, 5->e, 6->f (in order)
+
+	fmt.Println(tree)
+	//
+	//  AVLTree
+	//  │       ┌── 6
+	//  │   ┌── 5
+	//  └── 4
+	//      │   ┌── 3
+	//      └── 2
+	//          └── 1
+
+
+	_ = tree.Values() // []interface {}{"a", "b", "c", "d", "e", "f"} (in order)
+	_ = tree.Keys()   // []interface {}{1, 2, 3, 4, 5, 6} (in order)
+
+	tree.Remove(2) // 1->a, 3->c, 4->d, 5->e, 6->f (in order)
+	fmt.Println(tree)
+	//
+	//  AVLTree
+	//  │       ┌── 6
+	//  │   ┌── 5
+	//  └── 4
+	//      └── 3
+	//          └── 1
+
+	tree.Clear() // empty
+	tree.Empty() // true
+	tree.Size()  // 0
+}
+```
+
 #### BTree
 
 B-tree is a self-balancing tree data structure that keeps data sorted and allows searches, sequential access, insertions, and deletions in logarithmic time. The B-tree is a generalization of a binary search tree in that a node can have more than two children.
@@ -603,7 +667,7 @@ According to Knuth's definition, a B-tree of order m is a tree which satisfies t
 
 Each internal node’s keys act as separation values which divide its subtrees. For example, if an internal node has 3 child nodes (or subtrees) then it must have 2 keys: a1 and a2. All values in the leftmost subtree will be less than a1, all values in the middle subtree will be between a1 and a2, and all values in the rightmost subtree will be greater than a2.<sub><sup>[Wikipedia](http://en.wikipedia.org/wiki/Red%E2%80%93black_tree)</sub></sup>
 
-Implements [Tree](#trees) and [ReverseIteratorWithKey](#reverseiteratorwithkey) interfaces.
+Implements [Tree](#trees), [ReverseIteratorWithKey](#reverseiteratorwithkey), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 <p align="center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/B-tree.svg/831px-B-tree.svg.png" width="400px" height="111px" /></p>
 
@@ -675,7 +739,7 @@ A binary heap is a [tree](#trees) created using a binary tree. It can be seen as
 
   All nodes are either greater than or equal to or less than or equal to each of its children, according to a comparison predicate defined for the heap. <sub><sup>[Wikipedia](http://en.wikipedia.org/wiki/Binary_heap)</sub></sup>
 
-Implements [Tree](#trees) and [ReverseIteratorWithIndex](#reverseiteratorwithindex) interfaces.
+Implements [Tree](#trees), [ReverseIteratorWithIndex](#reverseiteratorwithindex), [JSONSerializer](#jsonserializer) and [JSONDeserializer](#jsondeserializer) interfaces.
 
 <p align="center"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Max-Heap.svg/501px-Max-Heap.svg.png" width="300px" height="200px" /></p>
 
@@ -771,6 +835,8 @@ func Float64Comparator(a, b interface{}) int
 func ByteComparator(a, b interface{}) int
 
 func RuneComparator(a, b interface{}) int
+
+func TimeComparator(a, b interface{}) int
 ```
 
 Writing custom comparators is easy:
@@ -1151,6 +1217,103 @@ func main() {
 }
 ```
 
+### Serialization
+
+All data structures can be serialized (marshalled) and deserialized (unmarshalled). Currently only JSON support is available.
+
+#### JSONSerializer
+
+Outputs the container into its JSON representation.
+
+Typical usage for key-value structures:
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/emirpasic/gods/maps/hashmap"
+)
+
+func main() {
+	m := hashmap.New()
+	m.Put("a", "1")
+	m.Put("b", "2")
+	m.Put("c", "3")
+
+	json, err := m.ToJSON()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(json)) // {"a":"1","b":"2","c":"3"}
+```
+
+Typical usage for value-only structures:
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/emirpasic/gods/lists/arraylist"
+)
+
+func main() {
+	list := arraylist.New()
+	list.Add("a", "b", "c")
+
+	json, err := list.ToJSON()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(json)) // ["a","b","c"]
+}
+```
+
+#### JSONDeserializer
+
+Populates the container with elements from the input JSON representation.
+
+Typical usage for key-value structures:
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/emirpasic/gods/lists/arraylist"
+)
+
+func main() {
+	list := arraylist.New()
+
+	json := []byte(`["a","b"]`)
+	err := list.FromJSON(json)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(list) // ArrayList ["a","b"]
+}
+```
+
+Typical usage for value-only structures:
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/emirpasic/gods/lists/arraylist"
+)
+
+func main() {
+	list := arraylist.New()
+
+	json := []byte(`["a","b"]`)
+	err := list.FromJSON(json)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(list) // ArrayList ["a","b"]
+}
+```
+
 ### Sort
 
 Sort is a general purpose sort function.
@@ -1253,7 +1416,7 @@ This takes a while, so test within sub-packages:
 
 Biggest contribution towards this library is to use it and give us feedback for further improvements and additions.
 
-For direct contributions, _pull request_ into master or ask to become a contributor.
+For direct contributions, _pull request_ into master branch or ask to become a contributor.
 
 Coding style:
 

@@ -4,26 +4,12 @@ import (
 	"flag"
 
 	"github.com/AsynkronIT/protoactor-go/actor"
-	"github.com/Nyarum/lalyandia/messages/local"
+	"github.com/Nyarum/lalyandia/auth/actors"
 	"github.com/Nyarum/lalyandia/server"
 	"github.com/Nyarum/lalyandia/services"
 
 	"fmt"
 )
-
-type AuthHandle struct {
-}
-
-func (state *AuthHandle) Receive(context actor.Context) {
-	switch context.Message().(type) {
-	case local.AcceptData:
-		acceptData := context.Message().(local.AcceptData)
-
-		fmt.Println(acceptData.Buf.String())
-
-		acceptData.Connection.Write([]byte("Hello, world!\n"))
-	}
-}
 
 func main() {
 	resourcePath := flag.String("resource", "resource/", "Path to resources")
@@ -32,7 +18,7 @@ func main() {
 	var (
 		srv            = server.NewServer()
 		servicesModule = services.NewServices()
-		props          = actor.FromInstance(&AuthHandle{})
+		props          = actor.FromInstance(&actors.AuthHandle{})
 	)
 
 	_, err := servicesModule.LoadAuthConfig(*resourcePath + "auth_config.toml")
@@ -40,7 +26,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	err = srv.Run(props, ":9998")
+	err = srv.Run(props, ":7777")
 	if err != nil {
 		fmt.Println(err)
 	}
