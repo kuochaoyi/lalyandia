@@ -14,10 +14,12 @@ build_proto:
 .PHONY: build_auth
 build_auth:
 	go build -o ${AUTH_NAME} ./auth/main.go
+	GOOS=windows GOARCH=amd64 go build -o ${AUTH_NAME}.exe ./auth/main.go
 
 .PHONY: build_game
 build_game:
 	go build -o ${GAME_NAME} ./game/main.go
+	GOOS=windows go build -o ${GAME_NAME}.exe ./game/main.go
 
 .PHONY: auth
 auth:
