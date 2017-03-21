@@ -2,6 +2,8 @@ package server
 
 import (
 	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -55,8 +57,29 @@ func (s *Server) Run(props *actor.Props, service string) error {
 				conn.Close()
 			}()
 
+			// Init crypt things
+			blowfishRandom := [16]byte{}
+			_, err := rand.Read(blowfishRandom[:])
+			if err != nil {
+				fmt.Println("Can't add random bytes to blowfish key -", err)
+				return
+			}
+
+			rsaKey, err := rsa.GenerateKey(rand.Reader, 1024)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			rsaKeyBytes := rsaKey.N.Bytes()
+			protocol.ScrambleMod(rsaKeyBytes)
+
+			// Send init data to an auth actor
 			pid.Tell(local.InitData{
-				Connection: conn,
+				Connection:     conn,
+				CustomProtocol: *customProtocol,
+				BlowfishKey:    blowfishRandom,
+				RSAKey:         rsaKeyBytes,
 			})
 
 			for {
@@ -75,8 +98,6 @@ func (s *Server) Run(props *actor.Props, service string) error {
 					continue
 				}
 
-				spew.Dump(buf[:readLen])
-
 				data.Write(buf[:readLen])
 
 				if data.Len() < 2 {
@@ -89,7 +110,17 @@ func (s *Server) Run(props *actor.Props, service string) error {
 					continue
 				}
 
-				opcode := data.Bytes()[2]
+				spew.Dump(data.Bytes()[2:])
+
+				dataDecrypted, err := protocol.BlowfishDecrypt(data.Bytes()[2:], blowfishRandom[:])
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+
+				spew.Dump(dataDecrypted)
+
+				opcode := dataDecrypted[0]
 				// For other packets with two sub opcode
 				/*
 					if opcode == 0xFE {
@@ -97,11 +128,9 @@ func (s *Server) Run(props *actor.Props, service string) error {
 					}
 				*/
 
-				data.Truncate(3)
-
 				log.Printf("Len of packet - %d and Opcode - %d\n", lenPacket, opcode)
 
-				st, err := customProtocol.Decode(uint16(opcode), data.Bytes())
+				st, err := customProtocol.Decode(uint16(opcode), dataDecrypted[1:])
 				if err != nil {
 					fmt.Println(err)
 					break
