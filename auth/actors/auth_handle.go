@@ -41,7 +41,7 @@ func (state *AuthHandle) Receive(context actor.Context) {
 		protocol.ScrambleMod(rsaKeyBytes)
 
 		serverInit := n746.NewServerInit()
-		serverInit.IDSession = 123123
+		serverInit.IDSession = 0
 		serverInit.RSAPublicKey = rsaKeyBytes
 		serverInit.BlowFishKey = blowfishRandom
 

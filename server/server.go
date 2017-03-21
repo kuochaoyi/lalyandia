@@ -11,6 +11,7 @@ import (
 	"github.com/AsynkronIT/protoactor-go/actor"
 	"github.com/Nyarum/lalyandia/messages/local"
 	"github.com/Nyarum/lalyandia/messages/protocol"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type Server struct {
@@ -74,7 +75,7 @@ func (s *Server) Run(props *actor.Props, service string) error {
 					continue
 				}
 
-				fmt.Println("Accept any bytes -", buf[:readLen])
+				spew.Dump(buf[:readLen])
 
 				data.Write(buf[:readLen])
 
