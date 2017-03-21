@@ -13,7 +13,7 @@ func NewClientGGAuth() ClientGGAuth {
 	return ClientGGAuth{}
 }
 
-func (si ClientGGAuth) Opcode() int16 {
+func (si ClientGGAuth) Opcode() uint16 {
 	return lsop.Init
 }
 

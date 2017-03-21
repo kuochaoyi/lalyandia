@@ -63,7 +63,7 @@ func (s *Server) Run(props *actor.Props, service string) error {
 				readLen, err := conn.Read(buf)
 				if err != nil {
 					if err == io.EOF {
-						fmt.Println(err)
+						fmt.Println("Client is disconnected -", conn.RemoteAddr())
 					} else if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
 						fmt.Println(err)
 					}
@@ -73,6 +73,8 @@ func (s *Server) Run(props *actor.Props, service string) error {
 				if readLen == 0 {
 					continue
 				}
+
+				fmt.Println("Accept any bytes -", buf[:readLen])
 
 				data.Write(buf[:readLen])
 
@@ -87,12 +89,18 @@ func (s *Server) Run(props *actor.Props, service string) error {
 				}
 
 				opcode := data.Bytes()[2]
+				// For other packets with two sub opcode
+				/*
+					if opcode == 0xFE {
+						opcode =
+					}
+				*/
 
 				data.Truncate(3)
 
 				log.Printf("Len of packet - %d and Opcode - %d\n", lenPacket, opcode)
 
-				st, err := customProtocol.Decode(int16(opcode), data.Bytes())
+				st, err := customProtocol.Decode(uint16(opcode), data.Bytes())
 				if err != nil {
 					fmt.Println(err)
 					break

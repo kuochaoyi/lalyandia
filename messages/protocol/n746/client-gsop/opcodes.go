@@ -1,7 +1,7 @@
 package gsop
 
 const (
-	SendProtocolVersion int16 = iota
+	SendProtocolVersion uint16 = iota
 	MoveBackwardToLocation
 	Say
 	RequestEnterWorld

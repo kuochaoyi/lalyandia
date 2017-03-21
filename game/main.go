@@ -26,7 +26,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	err = srv.Run(props, ":9999")
+	err = srv.Run(props, ":7777")
 	if err != nil {
 		fmt.Println(err)
 	}

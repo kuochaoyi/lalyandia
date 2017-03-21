@@ -1,7 +1,7 @@
 package lsop
 
 const (
-	Init int16 = iota
+	Init uint16 = iota
 	LoginFail
 	AccountKicked
 	LoginOk

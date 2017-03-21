@@ -1,47 +1,68 @@
 package protocol
 
-import "github.com/Nyarum/lalyandia/messages/protocol/n746"
+import (
+	"encoding/binary"
+	"errors"
+
+	"github.com/Nyarum/lalyandia/messages/protocol/n746"
+	"github.com/davecgh/go-spew/spew"
+)
 
 type IClientProtocol interface {
-	Opcode() int16
+	Opcode() uint16
 	Unmarshal([]byte) (interface{}, error)
 }
 
 type IServerProtocol interface {
-	Opcode() int16
-	Marshal(interface{}) ([]byte, error)
+	Opcode() uint16
+	Marshal() ([]byte, error)
 }
 
 type Protocol struct {
-	client map[int16]IClientProtocol
-	server map[int16]IServerProtocol
+	packets map[uint16]IClientProtocol
 }
 
 func NewProtocol() *Protocol {
 	protocol := (&Protocol{
-		client: make(map[int16]IClientProtocol),
-		server: make(map[int16]IServerProtocol),
-	}).registerServer(n746.NewServerInit())
+		packets: make(map[uint16]IClientProtocol),
+	}).registerPacket(n746.NewClientGGAuth())
 
 	return protocol
 }
 
-func (p *Protocol) registerClient(packet IClientProtocol) *Protocol {
-	p.client[packet.Opcode()] = packet
+func (p *Protocol) registerPacket(packet IClientProtocol) *Protocol {
+	p.packets[packet.Opcode()] = packet
 
 	return p
 }
 
-func (p *Protocol) registerServer(packet IServerProtocol) *Protocol {
-	p.server[packet.Opcode()] = packet
+func (p *Protocol) Decode(opcode uint16, data []byte) (interface{}, error) {
+	packet, ok := p.packets[opcode]
+	if !ok {
+		return nil, errors.New("Not found this opcode")
+	}
 
-	return p
+	return packet.Unmarshal(data)
 }
 
-func (p *Protocol) Decode(opcode int16, data []byte) (interface{}, error) {
-	return p.client[opcode].Unmarshal(data)
-}
+func (p *Protocol) Encode(sp IServerProtocol) ([]byte, error) {
+	result, err := sp.Marshal()
+	if err != nil {
+		return nil, err
+	}
 
-func (p *Protocol) Encode(opcode int16, st interface{}) ([]byte, error) {
-	return p.server[opcode].Marshal(st)
+	var (
+		sizeOfPacket = len(result) + 3
+		encodeBytes  = make([]byte, 0, sizeOfPacket)
+		lenBytes     = make([]byte, 2)
+	)
+
+	binary.LittleEndian.PutUint16(lenBytes, uint16(sizeOfPacket))
+	encodeBytes = append(encodeBytes, lenBytes...)
+	encodeBytes = append(encodeBytes, byte(sp.Opcode()))
+	encodeBytes = append(encodeBytes, result...)
+
+	spew.Dump(encodeBytes)
+
+	return encodeBytes, nil
 }
