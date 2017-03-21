@@ -2,7 +2,7 @@ package n746
 
 import (
 	"github.com/Nyarum/barrel"
-	lsop "github.com/Nyarum/lalyandia/messages/protocol/n746/client-lsop"
+	lsop "github.com/Nyarum/lalyandia/messages/protocol/n746/server-lsop"
 )
 
 // ServerInit struct for 0xC621 revision
@@ -27,7 +27,7 @@ func NewServerInit() ServerInit {
 }
 
 func (si ServerInit) Opcode() uint16 {
-	return lsop.RequestGGAuth
+	return lsop.Init
 }
 
 func (si ServerInit) Marshal() ([]byte, error) {

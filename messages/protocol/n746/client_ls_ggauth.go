@@ -2,7 +2,7 @@ package n746
 
 import (
 	"github.com/Nyarum/barrel"
-	lsop "github.com/Nyarum/lalyandia/messages/protocol/n746/server-lsop"
+	lsop "github.com/Nyarum/lalyandia/messages/protocol/n746/client-lsop"
 )
 
 type ClientGGAuth struct {
@@ -14,7 +14,7 @@ func NewClientGGAuth() ClientGGAuth {
 }
 
 func (si ClientGGAuth) Opcode() uint16 {
-	return lsop.Init
+	return lsop.RequestGGAuth
 }
 
 func (si ClientGGAuth) Unmarshal(data []byte) (interface{}, error) {
